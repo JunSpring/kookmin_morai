@@ -37,7 +37,7 @@ if __name__ == '__main__':
         p_r=pathReader("global_path")
         global_path = p_r.read_txt("webot_path.txt")
         rospy.init_node('path_reader', anonymous=True)
-        path_pub = rospy.Publisher('/global_path',Path, queue_size=1)
+        path_pub = rospy.Publisher('/path',Path, queue_size=1)
 
         rate=rospy.Rate(1)
         while not rospy.is_shutdown():
