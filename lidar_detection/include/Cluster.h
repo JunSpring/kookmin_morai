@@ -30,4 +30,11 @@ private:
     // lidar_detection::lidar0 lidar0; 
     // lidar_detection::lidar1 lidar1;
     // lidar_detection::lidar2 lidar2;
+
+    bool lidar0_update;
+    bool lidar1_update;
+    bool lidar2_update;
+    bool lidar3_update;
+    bool lidar4_update;
+    bool lidar5_update;
 };

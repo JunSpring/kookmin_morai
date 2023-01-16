@@ -29,6 +29,7 @@ void CloudCluster::publish_msg(int num, float position_x, float position_y)
 
             lidarALL.position_x0 = position_x;
             lidarALL.position_y0 = position_y;
+            lidar0_update = true;
             break;
         }
 
@@ -41,6 +42,7 @@ void CloudCluster::publish_msg(int num, float position_x, float position_y)
 
             lidarALL.position_x1 = position_x;
             lidarALL.position_y1 = position_y;
+            lidar1_update = true;
             break;
         }
 
@@ -53,6 +55,7 @@ void CloudCluster::publish_msg(int num, float position_x, float position_y)
 
             lidarALL.position_x2 = position_x;
             lidarALL.position_y2 = position_y;
+            lidar2_update = true;
             break;
         }
 
@@ -60,6 +63,7 @@ void CloudCluster::publish_msg(int num, float position_x, float position_y)
         {
             lidarALL.position_x3 = position_x;
             lidarALL.position_y3 = position_y;
+            lidar3_update = true;
             break;
         }
 
@@ -67,6 +71,7 @@ void CloudCluster::publish_msg(int num, float position_x, float position_y)
         {
             lidarALL.position_x4 = position_x;
             lidarALL.position_y4 = position_y;
+            lidar4_update = true;
             break;
         }
 
@@ -74,19 +79,25 @@ void CloudCluster::publish_msg(int num, float position_x, float position_y)
         {
             lidarALL.position_x5 = position_x;
             lidarALL.position_y5 = position_y;
+            lidar5_update = true;
             break;
         }
 
         default:
             break;
     }
-
-    pub_lidarALL.publish(lidarALL);
 }
     
 
 void CloudCluster::Callback(const sensor_msgs::PointCloud2ConstPtr& pcl2_msg)
 {
+    lidar0_update = false;
+    lidar1_update = false;
+    lidar2_update = false;
+    lidar3_update = false;
+    lidar4_update = false;
+    lidar5_update = false;
+    
     int n = 6;
     std::vector<geometry_msgs::Point> KFpredictions;
     visualization_msgs::MarkerArray clusterMarkers;
@@ -177,6 +188,15 @@ void CloudCluster::Callback(const sensor_msgs::PointCloud2ConstPtr& pcl2_msg)
             }
         }
     }
+
+    lidarALL.lidar0_update = lidar0_update;
+    lidarALL.lidar1_update = lidar1_update;
+    lidarALL.lidar2_update = lidar2_update;
+    lidarALL.lidar3_update = lidar3_update;
+    lidarALL.lidar4_update = lidar4_update;
+    lidarALL.lidar5_update = lidar5_update;
+
+    pub_lidarALL.publish(lidarALL);
     markerPub.publish(clusterMarkers);
 
     //ros::Rate loop_rate(5);
