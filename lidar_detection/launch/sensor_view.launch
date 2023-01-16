@@ -1,0 +1,12 @@
+<launch>
+
+  <include file="$(find obstacle_detector)/launch/nodes.launch">
+  </include>
+
+  <arg name="open_rviz" default="true"/>
+  <group if="$(arg open_rviz)"> 
+    <node pkg="rviz" type="rviz" name="rviz" required="true"
+          args="-d $(find lidar_detection)/rviz/sensor_view.rviz"/>
+  </group>
+  
+</launch>
