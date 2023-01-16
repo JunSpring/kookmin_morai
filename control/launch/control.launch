@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<launch>
+
+    <node name="control_publisher" pkg="control" type="control" respawn="true" output="screen" />
+    <node name="odometry_publisher" pkg="control" type="odometry_publisher" respawn="true" />
+
+</launch>

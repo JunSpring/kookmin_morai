@@ -13,6 +13,8 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   tf
   morai_msgs
+  sensor_msgs
+  tf2_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -209,5 +211,10 @@ include
 
 add_executable(control src/control.cpp)
 target_link_libraries(control
+  ${catkin_LIBRARIES}
+)
+
+add_executable(odometry_publisher src/odometry_publisher.cpp)
+target_link_libraries(odometry_publisher
   ${catkin_LIBRARIES}
 )
