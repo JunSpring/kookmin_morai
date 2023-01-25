@@ -9,6 +9,11 @@
 #include "opencv2/highgui.hpp"
 #include "opencv2/opencv.hpp"
 #include <cmath>
+#include <visualization_msgs/Marker.h>
+#include <visualization_msgs/MarkerArray.h>
+#include <geometry_msgs/Point.h>
+#include "std_msgs/Int32MultiArray.h"
+
 
 class CloudCluster
 {

@@ -1,14 +1,10 @@
 #include "Cluster.h"
-#include <visualization_msgs/Marker.h>
-#include <visualization_msgs/MarkerArray.h>
-#include <geometry_msgs/Point.h>
-#include "std_msgs/Int32MultiArray.h"
 
 CloudCluster::CloudCluster()
 {
     sub = nh.subscribe("/pcl2", 1, &CloudCluster::Callback, this); // PCL2 Subscribe
     pub_lidarALL = nh.advertise<lidar_detection::lidarALL>("/lidar_info", 1); // Lidar Info Publish
-    markerPub = nh.advertise<visualization_msgs::MarkerArray>("viz", 1); // Marker Publish
+    markerPub = nh.advertise<visualization_msgs::MarkerArray>("/lidar_detect", 1); // Marker Publish
 
     // 장애물 위치를 따로 publish 하는 경우
     // pub_lidar0= nh.advertise<lidar_detection::lidar0>("/lidar_info0", 1); 
@@ -99,7 +95,7 @@ void CloudCluster::Callback(const sensor_msgs::PointCloud2ConstPtr& pcl2_msg)
     lidar5_update = false;
     
     int n = 6;
-    std::vector<geometry_msgs::Point> KFpredictions;
+    std::vector<geometry_msgs::Point> center;
     visualization_msgs::MarkerArray clusterMarkers;
     pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>()); 
     pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud(new pcl::PointCloud<pcl::PointXYZ>);
@@ -139,12 +135,12 @@ void CloudCluster::Callback(const sensor_msgs::PointCloud2ConstPtr& pcl2_msg)
 
         if (pt.x != 0 && pt.y != 0)
         {
-            KFpredictions.push_back(pt);
+            center.push_back(pt);
         }
         
     }
 
-    if (KFpredictions.size()!=0)
+    if (center.size()!=0)
     {
         visualization_msgs::Marker m;
         for (int i = 0; i < n; i++) 
@@ -163,7 +159,7 @@ void CloudCluster::Callback(const sensor_msgs::PointCloud2ConstPtr& pcl2_msg)
             // m.color.g = i == 1 ? 1 : 0;
             // m.color.b = i == 2 ? 1 : 0;
 
-            geometry_msgs::Point clusterC(KFpredictions[i]);
+            geometry_msgs::Point clusterC(center[i]);
 
             if (abs(clusterC.x) < 2.0 && abs(clusterC.y) < 2.0)
             {
