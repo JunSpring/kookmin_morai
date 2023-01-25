@@ -228,7 +228,7 @@ double local_path::pure_pursuit()
         double rotated_x = 0;
         double rotated_y = 0;
 
-        lfd = speed.data / 1170 / 2.3;
+        lfd = speed.data / offset / 8.1;
         
         if(lfd < min_lfd)
         {
@@ -383,7 +383,7 @@ void local_path::process()
 
     double angle;
     angle = nomalize_angle(pure_pursuit());
-    speed.data = 8.1 * offset / (abs(angle) / 19.5 * 3 + 1);
+    speed.data = 8.1 * offset / (abs(angle) / 19.5 * 2.5 + 1);
     position.data = (steer_offset - angle)/(steer_offset * 2);  //-1 * angle / 19.5 * 0.6353 + 0.5304;
 
     speed_pub.publish(speed);
