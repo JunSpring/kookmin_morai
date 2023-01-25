@@ -34,7 +34,7 @@ class pathMaker :
         y=self.status_msg.transforms[0].transform.translation.y
         distance=sqrt(pow(x-self.prev_x,2)+pow(y-self.prev_y,2))
         # 이전 waypoint와의 거리가 0.3 이상이어야 기록
-        if distance >0.3:
+        if distance >0.1:
             data='{0}\t{1}\n'.format(x,y)
             self.f.write(data)
             self.prev_x=x
