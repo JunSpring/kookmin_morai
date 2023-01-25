@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES
+
 #include<ros/ros.h>
 #include<iostream>
 #include<math.h>
