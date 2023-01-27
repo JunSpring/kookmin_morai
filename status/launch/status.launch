@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<launch>
+
+    <node name="status_publisher" pkg="status" type="status" respawn="true" output="screen" />
+
+</launch>
