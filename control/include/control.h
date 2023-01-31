@@ -19,6 +19,8 @@
 
 #include<sensor_msgs/Imu.h>
 
+#include<status/status_msg.h>
+
 // #include <behaviortree_cpp_v3/loggers/bt_zmq_publisher.h>
 
 // // DWA include files
@@ -26,18 +28,35 @@
 // #include <costmap_2d/costmap_2d_ros.h>
 // #include <dwa_local_planner/dwa_planner_ros.h>
 
-class local_path{
+enum Statusnum
+{
+    NM, // No Mission
+    RC, // Rubber Cone
+    SO, // Static Obstacle
+    TL, // Traffic Light
+    RA, // RoundAbout
+    MO, // Moving Obstacle
+};
+
+class local_path
+{
 public:
     local_path();
     
     int num;
+    int status;
+
+    bool mission3_go;
     bool flag;
+
     bool is_look_foward_point;
     double L, VL;
     double vehicle_roll;
     double vehicle_pitch;
     double vehicle_yaw;
     double max_lfd, min_lfd;
+    double steering_angle;
+
     double rate = 10;
     double offset = 335.7699221348003;
     double steer_offset = 19.4799995422;
@@ -68,17 +87,24 @@ public:
     ros::Subscriber path_sub;
     ros::Subscriber tf_sub;
     ros::Subscriber imu_sub;
+    ros::Subscriber status_sub;
 
     // Callback
     void pathcallback(const nav_msgs::Path& msg);
     void tfcallback(const tf2_msgs::TFMessage& msg);
     void imucallback(const sensor_msgs::Imu& msg);
+    void statuscallback(const status::status_msg& msg);
     
-    //Function
+    // Function
     double pure_pursuit();
     double stanley();
     double velocity();
     double nomalize_angle(double);
     void path_tracking();
+    void mission();
     void process();
+
+    // Driving Function
+    void go();
+    void stop();
 };
