@@ -11,6 +11,7 @@ Status::Status()
     // Subscribe
     tf_sub      = nh.subscribe("/tf", 10, &Status::tfcallback, this);
     lidar_sub   = nh.subscribe("/lidar_info", 10, &Status::lidarcallback, this);
+    tl_sub      = nh.subscribe("/GetTrafficLightStatus", 10, &Status::tlcallback, this);
 }
 
 void Status::tfcallback(const tf2_msgs::TFMessage& msg)
@@ -46,25 +47,31 @@ void Status::lidarcallback(const lidar_detection::lidarALL& msg)
     LiDARS[5].lidar_update  = msg.lidar5_update;
 }
 
+void Status::tlcallback(const morai_msgs::GetTrafficLightStatus& msg)
+{
+    traffic_light_index     = msg.trafficLightIndex;
+    traffic_light_status    = msg.trafficLightStatus;
+}
+
 int Status::judge_mission()
 {
     if(x < -12)
     {
         return 1;
     }
-    else if(-11 < x && x < -5 && y < -5)
+    else if(-11 < x && x < -5 && y < -5.15)
     {
         return judge_mission_2and5();
     }
-    else if(4.8 < x && x < 8.6 && -2 < y && y < 2)
+    else if(4.8 < x && x < 8.6 && -2.44 < y && y < 2.15)
     {
         return 3;
     }
-    else if(11 < x && x < 14.7 && -2 < y && y < 2)
+    else if(11 < x && x < 14.7 && -2.15 < y && y < 2.15)
     {
         return 4;
     }
-    else if(1.8 < x && x < 5.75 && 4 < y && y < 5.7)
+    else if(1.8 < x && x < 5.75 && 4.15 < y && y < 5.85)
     {
         return judge_mission_2and5();
     }
@@ -76,12 +83,24 @@ int Status::judge_mission_2and5()
     return 2;
 }
 
+bool Status::judge_traffic_light()
+{
+    if(traffic_light_index == "SN000002")
+    {
+        if(traffic_light_status == G)
+            return true;
+        return false;
+    }
+    return true;
+}
+
 void Status::process()
 {
-    status_num.status = judge_mission();
-    status_pub.publish(status_num);
+    status_msg.status       = judge_mission();
+    status_msg.mission3_go  = judge_traffic_light();
+    status_pub.publish(status_msg);
 
-    switch(status_num.status)
+    switch(status_msg.status)
     {
     case 0:
         ROS_INFO("status : no mission driving\t\t\tnumber : 0");
@@ -93,7 +112,10 @@ void Status::process()
         ROS_INFO("status : static obstacle mission driving\tnumber : 2");
         break;
     case 3:
-        ROS_INFO("status : traffic light mission driving\t  \tnumber : 3");
+        if(status_msg.mission3_go)
+            ROS_INFO("status : traffic light mission driving\t\tnumber : 3\ttraffic light : Green");
+        else
+            ROS_INFO("status : traffic light mission driving\t\tnumber : 3\ttraffic light : Else");
         break;
     case 4:
         ROS_INFO("status : roundabout mission driving\t\tnumber : 4");
