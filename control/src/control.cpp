@@ -21,6 +21,7 @@ local_path::local_path()
     path_sub = nh.subscribe("/path0",10,&local_path::pathcallback,this);
     tf_sub = nh.subscribe("/tf", 10, &local_path::tfcallback, this);
     imu_sub = nh.subscribe("/imu", 10, &local_path::imucallback, this);
+    status_sub = nh.subscribe("/status", 10, &local_path::statuscallback, this);
 }
 
 void local_path::pathcallback(const nav_msgs::Path& msg)
@@ -47,6 +48,12 @@ void local_path::tfcallback(const tf2_msgs::TFMessage& msg)
     tf::Quaternion car_orientation(pose.pose.orientation.x, pose.pose.orientation.y, pose.pose.orientation.z, pose.pose.orientation.w);
     tf::Matrix3x3 matrix(car_orientation);
     matrix.getRPY(vehicle_roll, vehicle_pitch, vehicle_yaw);
+}
+
+void local_path::statuscallback(const status::status_msg& msg)
+{
+    status      = msg.status;
+    mission3_go = msg.mission3_go;
 }
 
 // 임시 imu 콜백
@@ -373,6 +380,25 @@ double local_path::stanley()
     return steering * 180 / 3.14;
 }
 
+void local_path::mission()
+{
+    switch(status)
+    {
+    case NM:
+        go();
+        break;
+    case TL:
+        if(mission3_go)
+            go();
+        else
+            stop();
+        break;
+    default:
+        go();
+        break;
+    }
+}
+
 void local_path::process()
 {
     nav_msgs::Path temp_path;
@@ -381,13 +407,23 @@ void local_path::process()
 
     path_tracking();
 
-    double angle;
-    angle = nomalize_angle(pure_pursuit());
-    speed.data = 8.1 * offset / (abs(angle) / 19.5 * 2.5 + 1);
-    position.data = (steer_offset - angle)/(steer_offset * 2);  //-1 * angle / 19.5 * 0.6353 + 0.5304;
-
+    steering_angle = nomalize_angle(pure_pursuit());
+    mission();
+    
     speed_pub.publish(speed);
     position_pub.publish(position);
+}
+
+void local_path::go()
+{
+    speed.data = 8.1 * offset / (abs(steering_angle) / 19.5 * 2.5 + 1);
+    position.data = (steer_offset - steering_angle)/(steer_offset * 2);  //-1 * angle / 19.5 * 0.6353 + 0.5304;
+}
+
+void local_path::stop()
+{
+    speed.data = 0;
+    position.data = (steer_offset - steering_angle)/(steer_offset * 2);  //-1 * angle / 19.5 * 0.6353 + 0.5304;
 }
 
 int main(int argc, char * argv[])
