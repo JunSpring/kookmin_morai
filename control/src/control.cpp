@@ -393,6 +393,9 @@ void local_path::mission()
         else
             stop();
         break;
+    case WD:
+        go_slow();
+        break;
     default:
         go();
         break;
@@ -417,6 +420,12 @@ void local_path::process()
 void local_path::go()
 {
     speed.data = 8.1 * offset / (abs(steering_angle) / 19.5 * 2.5 + 1);
+    position.data = (steer_offset - steering_angle)/(steer_offset * 2);  //-1 * angle / 19.5 * 0.6353 + 0.5304;
+}
+
+void local_path::go_slow()
+{
+    speed.data = 1.0 * offset / (abs(steering_angle) / 19.5 * 2.5 + 1);
     position.data = (steer_offset - steering_angle)/(steer_offset * 2);  //-1 * angle / 19.5 * 0.6353 + 0.5304;
 }
 

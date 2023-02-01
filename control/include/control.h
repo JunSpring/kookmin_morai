@@ -107,5 +107,6 @@ public:
 
     // Driving Function
     void go();
+    void go_slow();
     void stop();
 };
