@@ -48,6 +48,7 @@ public:
     double x;
     double y;
     double rate = 10;
+    double start_time;
 
     LiDAR LiDARS[6];
 

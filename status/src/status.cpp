@@ -6,6 +6,7 @@ Status::Status()
     ros::NodeHandle pnh("~");
 
     lane_num = 2;
+    start_time = 0;
 
     // Publish
     status_pub = nh.advertise<status::status_msg>("/status", 10);
@@ -82,7 +83,15 @@ int Status::judge_mission()
 
 int Status::judge_mission_2and5()
 {
-    return SO;
+    if(start_time == 0)
+        start_time = ros::Time::now().toSec();
+    
+    if(ros::Time::now().toSec() - start_time < 3)
+    {
+        return WD;
+    }
+    else
+        return SO;
 }
 
 int Status::judge_lane_num()
@@ -130,6 +139,9 @@ void Status::process()
         break;
     case MO:
         ROS_INFO("status : moving obstacle mission driving\tnumber : 5");
+        break;
+    case WD:
+        ROS_INFO("status : Wait for Detection\t\tnumber : 6");
         break;
     }
 }
