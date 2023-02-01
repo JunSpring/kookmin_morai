@@ -45,7 +45,8 @@ if __name__ == '__main__':
         change_lane = pathReader("global_path")
 
         main_lane = main_lane.read_txt("webot_path0.txt")
-        change_lane = change_lane.read_txt("webot_path1.txt")
+        change_lane_2 = change_lane.read_txt("webot_path1.txt")
+        change_lane_5 = change_lane.read_txt("webot_path2.txt")
         
         rospy.init_node('path_reader', anonymous=True)
         path_pub    = rospy.Publisher('/path',Path, queue_size=1)
@@ -53,9 +54,12 @@ if __name__ == '__main__':
 
         rate=rospy.Rate(10)
         while not rospy.is_shutdown():
-            if lane_num == 1:
-                path_pub.publish(change_lane)
-                rospy.loginfo("change lane is published!")
+            if lane_num == 12:
+                path_pub.publish(change_lane_2)
+                rospy.loginfo("change lane(2) is published!")
+            elif lane_num == 15:
+                path_pub.publish(change_lane_5)
+                rospy.loginfo("change lane(5) is published!")
             elif lane_num == 2:
                 path_pub.publish(main_lane)
                 rospy.loginfo("main lane is published")
