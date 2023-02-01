@@ -57,7 +57,7 @@ int Status::judge_mission()
 {
     if(x < -12)
     {
-        return 1;
+        return RC;
     }
     else if(-11 < x && x < -5 && y < -5.15)
     {
@@ -65,22 +65,22 @@ int Status::judge_mission()
     }
     else if(4.8 < x && x < 8.6 && -2.44 < y && y < 2.15)
     {
-        return 3;
+        return TL;
     }
     else if(11 < x && x < 14.7 && -2.15 < y && y < 2.15)
     {
-        return 4;
+        return RA;
     }
     else if(1.8 < x && x < 5.75 && 4.15 < y && y < 5.85)
     {
         return judge_mission_2and5();
     }
-    return 0;
+    return NM;
 }
 
 int Status::judge_mission_2and5()
 {
-    return 2;
+    return SO;
 }
 
 bool Status::judge_traffic_light()
