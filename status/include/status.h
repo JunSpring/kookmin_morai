@@ -42,6 +42,8 @@ public:
     std::string     traffic_light_index;
     int             traffic_light_status;
 
+    int lane_num;
+
     double x;
     double y;
     double rate = 10;
@@ -64,6 +66,7 @@ public:
     // Function
     int     judge_mission();
     int     judge_mission_2and5();
+    int     judge_lane_num();
     bool    judge_traffic_light();
     void    process();
 };
