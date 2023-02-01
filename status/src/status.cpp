@@ -63,7 +63,7 @@ int Status::judge_mission()
     {
         return judge_mission_2and5();
     }
-    else if(4.8 < x && x < 8.6 && -2.44 < y && y < 2.15)
+    else if(4.8 < x && x < 8.6 && -2.54 < y && y < 2.15)
     {
         return TL;
     }
