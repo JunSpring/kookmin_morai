@@ -55,8 +55,10 @@ if __name__ == '__main__':
         while not rospy.is_shutdown():
             if lane_num == 1:
                 path_pub.publish(change_lane)
+                rospy.loginfo("change lane is published!")
             elif lane_num == 2:
                 path_pub.publish(main_lane)
+                rospy.loginfo("main lane is published")
             
             rate.sleep()
     except rospy.ROSInterruptException:
