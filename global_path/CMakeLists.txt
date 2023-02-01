@@ -162,7 +162,6 @@ include_directories(
 catkin_install_python(PROGRAMS
   src/path_maker.py
   src/path_reader.py
-  src/path_reader2.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
