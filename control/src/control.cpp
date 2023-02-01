@@ -18,7 +18,7 @@ local_path::local_path()
     local_goal_pub = nh.advertise<geometry_msgs::PoseStamped>("/local_goal", 10);
 
     // Subscibe
-    path_sub = nh.subscribe("/path0",10,&local_path::pathcallback,this);
+    path_sub = nh.subscribe("/path",10,&local_path::pathcallback,this);
     tf_sub = nh.subscribe("/tf", 10, &local_path::tfcallback, this);
     imu_sub = nh.subscribe("/imu", 10, &local_path::imucallback, this);
     status_sub = nh.subscribe("/status", 10, &local_path::statuscallback, this);
