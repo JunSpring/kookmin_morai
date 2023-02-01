@@ -14,15 +14,16 @@ enum Statusnum
     TL, // Traffic Light
     RA, // RoundAbout
     MO, // Moving Obstacle
+    WD  // Wait for Detection
 };
 
 enum Trafficnum
 {
-    R = 1, // Red
-    G = 16, // Green
-    Y = 4, // Yellow
-    LG = 33, // Left Green
-    RY = 5, // Red Yellow
+    R = 1,      // Red
+    G = 16,     // Green
+    Y = 4,      // Yellow
+    LG = 33,    // Left Green
+    RY = 5      // Red Yellow
 };
 
 struct LiDAR
