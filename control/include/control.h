@@ -36,6 +36,7 @@ enum Statusnum
     TL, // Traffic Light
     RA, // RoundAbout
     MO, // Moving Obstacle
+    WD  // Wait for Detection
 };
 
 class local_path
@@ -106,5 +107,6 @@ public:
 
     // Driving Function
     void go();
+    void go_slow();
     void stop();
 };
