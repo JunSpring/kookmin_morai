@@ -119,6 +119,7 @@ void Status::process()
     switch(status_msg.status)
     {
     case NM:
+        start_time = 0; 
         ROS_INFO("status : no mission driving\t\t\tnumber : 0");
         break;
     case RC:
