@@ -425,7 +425,7 @@ void local_path::go()
 
 void local_path::go_slow()
 {
-    speed.data = 1.0 * offset / (abs(steering_angle) / 19.5 * 2.5 + 1);
+    speed.data = 1.0 * offset;
     position.data = (steer_offset - steering_angle)/(steer_offset * 2);  //-1 * angle / 19.5 * 0.6353 + 0.5304;
 }
 
