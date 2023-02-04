@@ -7,6 +7,7 @@ Status::Status()
 
     lane_num = 2;
     start_time = 0;
+    mission = WD;
 
     // Publish
     status_pub = nh.advertise<status::status_msg>("/status", 10);
@@ -83,15 +84,42 @@ int Status::judge_mission()
 
 int Status::judge_mission_2and5()
 {
-    if(start_time == 0)
-        start_time = ros::Time::now().toSec();
+    if(mission == SO || mission == MO)
+        return mission;
     
-    if(ros::Time::now().toSec() - start_time < 3)
+    bool LiDAR_detected = false;
+    int  LiDAR_index;
+
+    for(LiDAR_index = 0; LiDAR_index < LiDAR_NUM; LiDAR_index++)
     {
-        return WD;
+        if(-0.8 < LiDARS[LiDAR_index].position_x && LiDARS[LiDAR_index].position_x < 0.8)
+        {
+            LiDAR_detected = true;
+            break;
+        }
     }
-    else
-        return SO;
+
+    if(LiDAR_detected && start_time == 0)
+    {
+        start_time = ros::Time::now().toSec();
+        object = LiDARS[LiDAR_index].position_x;
+        object_count = 0;
+    }
+    else if(ros::Time::now().toSec() - start_time < 2)
+    {
+        if(LiDAR_detected && abs(object - LiDARS[LiDAR_index].position_x) > 0.1)
+            object_count++;
+    }
+    else if(start_time != 0 && ros::Time::now().toSec() - start_time >= 2)
+    {
+        if(object_count >= 10)
+            mission = MO;
+        else
+            mission = SO;
+        return mission;
+    }
+
+    return WD;
 }
 
 int Status::judge_lane_num()
@@ -119,7 +147,8 @@ void Status::process()
     switch(status_msg.status)
     {
     case NM:
-        start_time = 0; 
+        start_time = 0;
+        mission = WD;
         ROS_INFO("status : no mission driving\t\t\tnumber : 0");
         break;
     case RC:
