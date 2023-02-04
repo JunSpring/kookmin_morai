@@ -106,8 +106,8 @@ void CloudCluster::Callback(const sensor_msgs::PointCloud2ConstPtr& pcl2_msg)
     tree->setInputCloud(input_cloud); 
 
     // Euclidean Cluster Extraction
-    ec.setClusterTolerance(0.08);    // Point 사이 최소 허용 거리
-    ec.setMinClusterSize(4);    // Min Cluster Size
+    ec.setClusterTolerance(0.1);    // Point 사이 최소 허용 거리
+    ec.setMinClusterSize(2);    // Min Cluster Size
     ec.setMaxClusterSize(30);   // Max Cluster Size
     ec.setSearchMethod(tree);   // Search Method - tree 
     ec.setInputCloud(input_cloud);    // Clustering result
