@@ -72,9 +72,11 @@ public:
     void tlcallback(const morai_msgs::GetTrafficLightStatus& msg);
 
     // Function
+    int     judge_LiDAR_detected(double roi);
     int     judge_mission();
     int     judge_mission_2and5();
     int     judge_lane_num();
     bool    judge_traffic_light();
+    bool    judge_moving_obstacle();
     void    process();
 };

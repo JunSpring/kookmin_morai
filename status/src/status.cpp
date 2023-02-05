@@ -57,6 +57,19 @@ void Status::tlcallback(const morai_msgs::GetTrafficLightStatus& msg)
     traffic_light_status    = msg.trafficLightStatus;
 }
 
+int Status::judge_LiDAR_detected(double roi)
+{
+    int LiDAR_index;
+    for(LiDAR_index = 0; LiDAR_index < LiDAR_NUM; LiDAR_index++)
+    {
+        if(-1*roi < LiDARS[LiDAR_index].position_x && LiDARS[LiDAR_index].position_x < roi)
+        {
+            return LiDAR_index;
+        }
+    }
+    return -1;
+}
+
 int Status::judge_mission()
 {
     if(x < -12)
