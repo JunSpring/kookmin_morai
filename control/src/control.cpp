@@ -53,7 +53,9 @@ void local_path::tfcallback(const tf2_msgs::TFMessage& msg)
 void local_path::statuscallback(const status::status_msg& msg)
 {
     status      = msg.status;
+    lane_num    = msg.lane_num;
     mission3_go = msg.mission3_go;
+    mission5_go = msg.mission5_go;
 }
 
 // 임시 imu 콜백
@@ -393,6 +395,11 @@ void local_path::mission()
         else
             stop();
         break;
+    case MO:
+        if(mission5_go)
+            go_slow();
+        else
+            stop();
     case WD:
         go_slow();
         break;

@@ -46,8 +46,10 @@ public:
     
     int num;
     int status;
-
+    int lane_num;
+    
     bool mission3_go;
+    bool mission5_go;
     bool flag;
 
     bool is_look_foward_point;
