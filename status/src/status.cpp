@@ -138,10 +138,14 @@ bool Status::judge_traffic_light()
     return true;
 }
 
+bool Status::judge_moving_obstacle()
+{
+
+}
+
 void Status::process()
 {
-    status_msg.status       = judge_mission();
-    status_msg.mission3_go  = judge_traffic_light();
+    status_msg.status = judge_mission();
     status_pub.publish(status_msg);
 
     switch(status_msg.status)
@@ -159,6 +163,7 @@ void Status::process()
         ROS_INFO("status : static obstacle mission driving\tnumber : 2\tlane number : %d", lane_num);
         break;
     case TL:
+        status_msg.mission3_go = judge_traffic_light();
         if(status_msg.mission3_go)
             ROS_INFO("status : traffic light mission driving\t\tnumber : 3\ttraffic light : Green");
         else
@@ -168,10 +173,14 @@ void Status::process()
         ROS_INFO("status : roundabout mission driving\t\tnumber : 4");
         break;
     case MO:
-        ROS_INFO("status : moving obstacle mission driving\tnumber : 5");
+        status_msg.mission5_go = judge_moving_obstacle();
+        if(status_msg.mission5_go)
+            ROS_INFO("status : moving obstacle mission driving\tnumber : 5\tdriving mode : Go");
+        else
+            ROS_INFO("status : moving obstacle mission driving\tnumber : 5\tdriving mode : Stop");
         break;
     case WD:
-        ROS_INFO("status : Wait for Detection\t\tnumber : 6");
+        ROS_INFO("status : Wait for Detection\t\t\tnumber : 6");
         break;
     }
 }
