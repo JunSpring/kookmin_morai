@@ -100,19 +100,10 @@ int Status::judge_mission_2and5()
     if(mission == SO || mission == MO)
         return mission;
     
-    bool LiDAR_detected = false;
-    int  LiDAR_index;
+    
+    int  LiDAR_index = judge_LiDAR_detected(0.8);
 
-    for(LiDAR_index = 0; LiDAR_index < LiDAR_NUM; LiDAR_index++)
-    {
-        if(-0.8 < LiDARS[LiDAR_index].position_x && LiDARS[LiDAR_index].position_x < 0.8)
-        {
-            LiDAR_detected = true;
-            break;
-        }
-    }
-
-    if(LiDAR_detected && start_time == 0)
+    if(LiDAR_index != -1 && start_time == 0)
     {
         start_time = ros::Time::now().toSec();
         object = LiDARS[LiDAR_index].position_x;
@@ -120,7 +111,7 @@ int Status::judge_mission_2and5()
     }
     else if(ros::Time::now().toSec() - start_time < 2)
     {
-        if(LiDAR_detected && abs(object - LiDARS[LiDAR_index].position_x) > 0.1)
+        if(LiDAR_index != -1 && abs(object - LiDARS[LiDAR_index].position_x) > 0.1)
             object_count++;
     }
     else if(start_time != 0 && ros::Time::now().toSec() - start_time >= 2)
@@ -153,7 +144,16 @@ bool Status::judge_traffic_light()
 
 bool Status::judge_moving_obstacle()
 {
+    int LiDAR_index = judge_LiDAR_detected(0.8);
+    static int real_index = -1;
 
+    if(LiDAR_index != -1)
+        real_index = LiDAR_index;
+    
+    if(LiDARS[real_index].position_x > 0.4)
+        return true;
+    else if(LiDARS[real_index].position_y < 0.5)
+        return false;
 }
 
 void Status::process()
