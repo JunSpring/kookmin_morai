@@ -387,24 +387,25 @@ void local_path::mission()
     switch(status)
     {
     case NM:
-        go();
+        go(8.1);
         break;
     case TL:
         if(mission3_go)
-            go();
+            go(8.1);
         else
             stop();
         break;
     case MO:
         if(mission5_go)
-            go_slow();
+            go_slow(4.0);
         else
             stop();
+        break;
     case WD:
-        go_slow();
+        go_slow(2.0);
         break;
     default:
-        go();
+        go(8.1);
         break;
     }
 }
@@ -424,15 +425,15 @@ void local_path::process()
     position_pub.publish(position);
 }
 
-void local_path::go()
+void local_path::go(double speed_input)
 {
-    speed.data = 8.1 * offset / (abs(steering_angle) / 19.5 * 2.5 + 1);
+    speed.data = speed_input * offset / (abs(steering_angle) / 19.5 * 2.5 + 1);
     position.data = (steer_offset - steering_angle)/(steer_offset * 2);  //-1 * angle / 19.5 * 0.6353 + 0.5304;
 }
 
-void local_path::go_slow()
+void local_path::go_slow(double speed_input)
 {
-    speed.data = 1.0 * offset;
+    speed.data = speed_input * offset;
     position.data = (steer_offset - steering_angle)/(steer_offset * 2);  //-1 * angle / 19.5 * 0.6353 + 0.5304;
 }
 
