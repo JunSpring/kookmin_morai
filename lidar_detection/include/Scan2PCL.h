@@ -32,7 +32,7 @@ private:
     std::vector<float> laser_ranges;
     int index;
     size_t range_size;
-    float max_range = 1.75;
+    float max_range = 1.4;
     float min_range = 0.2;
     float angle, x, y;    
     std::tuple<float, float> coordinate;
