@@ -1,0 +1,4 @@
+float32 center_x
+float32 center_y
+bool center_update
+float32 center_angle
