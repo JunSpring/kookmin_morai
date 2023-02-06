@@ -22,6 +22,7 @@ local_path::local_path()
     tf_sub = nh.subscribe("/tf", 10, &local_path::tfcallback, this);
     imu_sub = nh.subscribe("/imu", 10, &local_path::imucallback, this);
     status_sub = nh.subscribe("/status", 10, &local_path::statuscallback, this);
+    rc_sub = nh.subscribe("/cone_center", 10, &local_path::rccallback, this);
 }
 
 void local_path::pathcallback(const nav_msgs::Path& msg)
@@ -67,6 +68,11 @@ void local_path::imucallback(const sensor_msgs::Imu& msg)
     by = msg.orientation.y;
     bz = msg.orientation.z;
     bw = msg.orientation.w;
+}
+
+void local_path::rccallback(const rubber_cone::rubber_cone_msg& msg)
+{
+    center_angle = -1 * msg.center_angle;
 }
 
 // 모든 path에서 앞으로 나아갈 num만큼의 길이의 path를 /tracking_path로 publish
@@ -387,25 +393,29 @@ void local_path::mission()
     switch(status)
     {
     case NM:
-        go(8.1);
+        go(8.1, steering_angle);
+        break;
+    case RC:
+        center_angle = nomalize_angle(center_angle);
+        go_slow(2.0, center_angle);
         break;
     case TL:
         if(mission3_go)
-            go(8.1);
+            go(8.1, steering_angle);
         else
             stop();
         break;
     case MO:
         if(mission5_go)
-            go_slow(4.0);
+            go_slow(4.0, steering_angle);
         else
             stop();
         break;
     case WD:
-        go_slow(2.0);
+        go_slow(2.0, steering_angle);
         break;
     default:
-        go(8.1);
+        go(8.1, steering_angle);
         break;
     }
 }
@@ -425,16 +435,16 @@ void local_path::process()
     position_pub.publish(position);
 }
 
-void local_path::go(double speed_input)
+void local_path::go(double speed_input, double angle)
 {
     speed.data = speed_input * offset / (abs(steering_angle) / 19.5 * 2.5 + 1);
-    position.data = (steer_offset - steering_angle)/(steer_offset * 2);  //-1 * angle / 19.5 * 0.6353 + 0.5304;
+    position.data = (steer_offset - angle)/(steer_offset * 2);  //-1 * angle / 19.5 * 0.6353 + 0.5304;
 }
 
-void local_path::go_slow(double speed_input)
+void local_path::go_slow(double speed_input, double angle)
 {
     speed.data = speed_input * offset;
-    position.data = (steer_offset - steering_angle)/(steer_offset * 2);  //-1 * angle / 19.5 * 0.6353 + 0.5304;
+    position.data = (steer_offset - angle)/(steer_offset * 2);  //-1 * angle / 19.5 * 0.6353 + 0.5304;
 }
 
 void local_path::stop()
