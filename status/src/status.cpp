@@ -72,11 +72,11 @@ int Status::judge_LiDAR_detected(double roi)
 
 int Status::judge_mission()
 {
-    if(x < -12)
+    if(x < -12.5)
     {
         return RC;
     }
-    else if(-11 < x && x < -5 && y < -5.15)
+    else if(-12 < x && x < -5 && y < -5.15)
     {
         return judge_mission_2and5();
     }
