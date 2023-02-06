@@ -47,7 +47,7 @@ public:
     int num;
     int status;
     int lane_num;
-    
+
     bool mission3_go;
     bool mission5_go;
     bool flag;
@@ -60,7 +60,7 @@ public:
     double max_lfd, min_lfd;
     double steering_angle;
 
-    double rate = 10;
+    double rate = 50;
     double offset = 335.7699221348003;
     double steer_offset = 19.4799995422;
 
@@ -108,7 +108,7 @@ public:
     void process();
 
     // Driving Function
-    void go();
-    void go_slow();
+    void go(double speed_input);
+    void go_slow(double speed_input);
     void stop();
 };

@@ -50,7 +50,7 @@ public:
 
     double x;
     double y;
-    double rate = 10;
+    double rate = 50;
     double start_time;
 
     int    object_count;
