@@ -51,10 +51,12 @@ void RubberCone::Callback(const lidar_detection::lidarALL& lidar_msg)
 
     if (dist_left.size() >= 1 && dist_right.size() >= 1)
     {
-        min_dist1_x = std::get<0>(dist_left[0]);
-        min_dist1_y = std::get<1>(dist_left[0]);
-        min_dist2_x = std::get<0>(dist_right[0]);
-        min_dist2_y = std::get<1>(dist_right[0]);
+        int index_left = dist_left.size() - 1;
+        int index_right = dist_right.size() - 1;
+        min_dist1_x = std::get<0>(dist_left[index_left]);
+        min_dist1_y = std::get<1>(dist_left[index_left]);
+        min_dist2_x = std::get<0>(dist_right[index_right]);
+        min_dist2_y = std::get<1>(dist_right[index_right]);
         center_x = (min_dist1_x + min_dist2_x)/2;
         center_y = (min_dist1_y + min_dist2_y)/2;
 
@@ -63,8 +65,9 @@ void RubberCone::Callback(const lidar_detection::lidarALL& lidar_msg)
 
     else if (dist_left.size() < 1 && dist_right.size() >= 1)
     {
-        min_dist1_x = std::get<0>(dist_right[0]);
-        min_dist1_y = std::get<1>(dist_right[0]);
+        int index = dist_right.size() - 1;
+        min_dist1_x = std::get<0>(dist_right[index]);
+        min_dist1_y = std::get<1>(dist_right[index]);
 
         center_x = min_dist1_x - 0.6;
         center_y = min_dist1_y;
@@ -74,8 +77,9 @@ void RubberCone::Callback(const lidar_detection::lidarALL& lidar_msg)
 
     else if (dist_right.size() < 1 && dist_left.size() >= 1)
     {
-        min_dist1_x = std::get<0>(dist_left[0]);
-        min_dist1_y = std::get<1>(dist_left[0]);
+        int index = dist_left.size() - 1;
+        min_dist1_x = std::get<0>(dist_left[index]);
+        min_dist1_y = std::get<1>(dist_left[index]);
 
         center_x = min_dist1_x + 0.6;
         center_y = min_dist1_y;
