@@ -145,12 +145,16 @@ bool Status::judge_traffic_light()
 bool Status::judge_moving_obstacle()
 {
     int LiDAR_index = judge_LiDAR_detected(0.8);
-    static double real_data = -1;
+    static double real_data_x = -1;
+    static double real_data_y = -1;
 
     if(LiDAR_index != -1)
-        real_data = LiDARS[LiDAR_index].position_x;
+    {
+        real_data_x = LiDARS[LiDAR_index].position_x;
+        real_data_y = LiDARS[LiDAR_index].position_y;
+    }
     
-    if(real_data < 0.4)
+    if(real_data_x < 0.4 && real_data_y < 1.0)
         return false;
     return true;
 }
