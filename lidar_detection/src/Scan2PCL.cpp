@@ -3,18 +3,37 @@
 Scan2PCL::Scan2PCL()
 {
     sub = nh.subscribe("/scan", 1, &Scan2PCL::Callback, this); //LaserScan Subscribe
+    sub_status = nh.subscribe("/status", 1, &Scan2PCL::Callback_status, this); // PCL2 Subscribe
     pub = nh.advertise<sensor_msgs::PointCloud2>("/pcl2", 1); //PCL2 Publish
     pub_all = nh.advertise<sensor_msgs::PointCloud2>("/pcl2_all", 1); //PCL2 ALL
+}
+
+void Scan2PCL::Callback_status(const status::status_msg msg)
+{
+    status = msg.status;
 }
 
 void Scan2PCL::Callback(const sensor_msgs::LaserScan laser_msg)
 {
     cloud.clear();
+    
     pcl::PointCloud<pcl::PointXYZ> cloud_all;
     sensor_msgs::PointCloud2 cloud2_all;
     
     laser_ranges = laser_msg.ranges;
     range_size = laser_ranges.size();
+
+    if (status == SO || status == MO || status == WD)
+    {
+        max_range = 2.0;
+        ROS_INFO("max range 2.0");
+    }
+
+    else 
+    {
+        max_range = 1.4;
+        ROS_INFO("max range 1.4");
+    }
 
     // ROI
     for(size_t i=0; i<range_size; i++)
