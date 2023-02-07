@@ -2,7 +2,7 @@
 
 Scan2PCL::Scan2PCL()
 {
-    sub = nh.subscribe("/scan", 1, &Scan2PCL::Callback, this); //LaserScan Subscribe
+    sub = nh.subscribe("/lidar2D", 1, &Scan2PCL::Callback, this); //LaserScan Subscribe
     sub_status = nh.subscribe("/status", 1, &Scan2PCL::Callback_status, this); // PCL2 Subscribe
     pub = nh.advertise<sensor_msgs::PointCloud2>("/pcl2", 1); //PCL2 Publish
     pub_all = nh.advertise<sensor_msgs::PointCloud2>("/pcl2_all", 1); //PCL2 ALL
@@ -41,10 +41,10 @@ void Scan2PCL::Callback(const sensor_msgs::LaserScan laser_msg)
         if(laser_ranges[i] > min_range && laser_ranges[i] < max_range) // ROI range
         { 
             angle = laser_msg.angle_min + 360.0 * (float(i) / float(range_size));
-            if(90.0 <= angle && angle <= 270.0) // ROI angle
+            if(90.0 >= angle || angle >= 270.0) // ROI angle
             {
-                x = (1) * std::get<0>(coordinate);
-                y = (-1) * std::get<1>(coordinate);
+                x = (-1) * std::get<0>(coordinate);
+                y = (1) * std::get<1>(coordinate);
                 coordinate = coordinate_calc(laser_ranges[i], angle); 
                 cloud.push_back(pcl::PointXYZ(x, y, 0));
             }
