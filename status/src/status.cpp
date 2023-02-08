@@ -5,7 +5,7 @@ Status::Status()
     ros::NodeHandle nh;
     ros::NodeHandle pnh("~");
 
-    lane_num = 2;
+    status_msg.lane_num = 2;
     start_time = 0;
     mission = WD;
 
@@ -60,14 +60,22 @@ void Status::tlcallback(const morai_msgs::GetTrafficLightStatus& msg)
 int Status::judge_LiDAR_detected(double roi)
 {
     int LiDAR_index;
+    double least = 10000;
+    double least_index = -1;
+
     for(LiDAR_index = 0; LiDAR_index < LiDAR_NUM; LiDAR_index++)
     {
-        if(-1*roi < LiDARS[LiDAR_index].position_x && LiDARS[LiDAR_index].position_x < roi)
+        if(-1*roi < LiDARS[LiDAR_index].position_x && LiDARS[LiDAR_index].position_x < roi && LiDARS[LiDAR_index].lidar_update)
         {
-            return LiDAR_index;
+            if(pow(LiDARS[LiDAR_index].position_x, 2) + pow(LiDARS[LiDAR_index].position_y, 2) < least)
+            {
+                least_index = LiDAR_index;
+                least = pow(LiDARS[LiDAR_index].position_x, 2) + pow(LiDARS[LiDAR_index].position_y, 2);
+            }
         }
     }
-    return -1;
+    
+    return least_index;
 }
 
 int Status::judge_mission()
@@ -76,8 +84,9 @@ int Status::judge_mission()
     {
         return RC;
     }
-    else if(-12 < x && x < -5 && y < -5.15)
+    else if(-12 < x && x < -5 && y < -4.0)
     {
+        mission_2and5 = 2;
         return judge_mission_2and5();
     }
     else if(4.8 < x && x < 8.6 && -2.54 < y && y < 2.15)
@@ -90,6 +99,7 @@ int Status::judge_mission()
     }
     else if(1.8 < x && x < 6.75 && 4.15 < y && y < 5.85)
     {
+        mission_2and5 = 5;
         return judge_mission_2and5();
     }
     return NM;
@@ -101,7 +111,7 @@ int Status::judge_mission_2and5()
         return mission;
     
     
-    int  LiDAR_index = judge_LiDAR_detected(0.8);
+    int LiDAR_index = judge_LiDAR_detected(0.8);
 
     if(LiDAR_index != -1 && start_time == 0)
     {
@@ -120,6 +130,7 @@ int Status::judge_mission_2and5()
             mission = MO;
         else
             mission = SO;
+        start_time = 0;
         return mission;
     }
 
@@ -128,7 +139,37 @@ int Status::judge_mission_2and5()
 
 int Status::judge_lane_num()
 {
-    return 2;
+    int LiDAR_index = judge_LiDAR_detected(0.2);
+    static double real_data_x = -1;
+    static double real_data_y = -1;
+
+    int lane = status_msg.lane_num;
+
+    if(LiDAR_index != -1 && ros::Time::now().toSec() - start_time > 1.0)
+    {
+        real_data_x = LiDARS[LiDAR_index].position_x;
+        real_data_y = LiDARS[LiDAR_index].position_y;
+    }
+    
+    if(0 < real_data_y && real_data_y < 2.0 && ros::Time::now().toSec() - start_time > 1.0)
+    {
+        ROS_INFO("%f", real_data_y);
+        if(status_msg.lane_num == 2)
+        {
+            if(mission_2and5 == 2)
+                lane = 12;
+            else
+                lane = 15;
+        }
+        else
+            lane = 2;
+
+        real_data_x = -1;
+        real_data_y = -1;
+        start_time = ros::Time::now().toSec();
+    }
+
+    return lane;
 }
 
 bool Status::judge_traffic_light()
@@ -169,6 +210,7 @@ void Status::process()
     case NM:
         start_time = 0;
         mission = WD;
+        status_msg.lane_num = 2;
         ROS_INFO("status : no mission driving\t\t\tnumber : 0");
         break;
     case RC:
@@ -176,7 +218,7 @@ void Status::process()
         break;
     case SO:
         status_msg.lane_num = judge_lane_num();
-        ROS_INFO("status : static obstacle mission driving\tnumber : 2\tlane number : %d", lane_num);
+        ROS_INFO("status : static obstacle mission driving\tnumber : 2\tlane number : %d", status_msg.lane_num);
         break;
     case TL:
         status_msg.mission3_go = judge_traffic_light();

@@ -47,6 +47,7 @@ public:
 
     int lane_num;
     int mission;
+    int mission_2and5;
 
     double x;
     double y;

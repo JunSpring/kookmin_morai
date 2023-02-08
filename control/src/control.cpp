@@ -397,7 +397,10 @@ void local_path::mission()
         break;
     case RC:
         center_angle = nomalize_angle(center_angle);
-        go_slow(2.0, center_angle);
+        go_slow(8.1, steering_angle); // 2.0, center_angle);
+        break;
+    case SO:
+        go_slow(4.0, steering_angle);
         break;
     case TL:
         if(mission3_go)
@@ -412,7 +415,7 @@ void local_path::mission()
             stop();
         break;
     case WD:
-        go_slow(2.0, steering_angle);
+        go_slow(1.0, steering_angle);
         break;
     default:
         go(8.1, steering_angle);
