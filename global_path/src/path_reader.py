@@ -23,8 +23,8 @@ class pathReader :
         for i in line :
             tmp=i.split()
             read_pose=PoseStamped()
-            read_pose.pose.position.x=float(tmp[0])
-            read_pose.pose.position.y=float(tmp[1])
+            read_pose.pose.position.x=float(tmp[0]) * 0.99675
+            read_pose.pose.position.y=float(tmp[1]) * 0.99675
             read_pose.pose.position.z=0
             read_pose.pose.orientation.x=0
             read_pose.pose.orientation.y=0

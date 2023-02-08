@@ -126,7 +126,7 @@ int Status::judge_mission_2and5()
     }
     else if(start_time != 0)
     {
-        if(object_count >= (ros::Time::now().toSec() - start_time) / 2 * 10)
+        if(object_count >= 5)
             mission = MO;
         else
             mission = SO;
