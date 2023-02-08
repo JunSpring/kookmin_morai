@@ -21,6 +21,8 @@
 
 #include<status/status_msg.h>
 
+#include<rubber_cone/rubber_cone_msg.h>
+
 // #include <behaviortree_cpp_v3/loggers/bt_zmq_publisher.h>
 
 // // DWA include files
@@ -46,8 +48,10 @@ public:
     
     int num;
     int status;
+    int lane_num;
 
     bool mission3_go;
+    bool mission5_go;
     bool flag;
 
     bool is_look_foward_point;
@@ -58,7 +62,9 @@ public:
     double max_lfd, min_lfd;
     double steering_angle;
 
-    double rate = 10;
+    double center_angle;
+
+    double rate = 50;
     double offset = 335.7699221348003;
     double steer_offset = 19.4799995422;
 
@@ -89,12 +95,14 @@ public:
     ros::Subscriber tf_sub;
     ros::Subscriber imu_sub;
     ros::Subscriber status_sub;
+    ros::Subscriber rc_sub;
 
     // Callback
     void pathcallback(const nav_msgs::Path& msg);
     void tfcallback(const tf2_msgs::TFMessage& msg);
     void imucallback(const sensor_msgs::Imu& msg);
     void statuscallback(const status::status_msg& msg);
+    void rccallback(const rubber_cone::rubber_cone_msg& msg);
     
     // Function
     double pure_pursuit();
@@ -106,7 +114,7 @@ public:
     void process();
 
     // Driving Function
-    void go();
-    void go_slow();
+    void go(double speed_input, double angle);
+    void go_slow(double speed_input, double angle);
     void stop();
 };

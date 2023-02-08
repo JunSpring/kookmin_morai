@@ -6,6 +6,8 @@
 #include<lidar_detection/lidarALL.h>
 #include<morai_msgs/GetTrafficLightStatus.h>
 
+#define LiDAR_NUM 6
+
 enum Statusnum
 {
     NM, // No Mission
@@ -44,11 +46,16 @@ public:
     int             traffic_light_status;
 
     int lane_num;
+    int mission;
+    int mission_2and5;
 
     double x;
     double y;
-    double rate = 10;
+    double rate = 50;
     double start_time;
+
+    int    object_count;
+    double object;
 
     LiDAR LiDARS[6];
 
@@ -66,9 +73,11 @@ public:
     void tlcallback(const morai_msgs::GetTrafficLightStatus& msg);
 
     // Function
+    int     judge_LiDAR_detected(double roi);
     int     judge_mission();
     int     judge_mission_2and5();
     int     judge_lane_num();
     bool    judge_traffic_light();
+    bool    judge_moving_obstacle();
     void    process();
 };
