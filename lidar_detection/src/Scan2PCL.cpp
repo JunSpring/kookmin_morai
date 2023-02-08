@@ -41,7 +41,7 @@ void Scan2PCL::Callback(const sensor_msgs::LaserScan laser_msg)
         if(laser_ranges[i] > min_range && laser_ranges[i] < max_range) // ROI range
         { 
             angle = laser_msg.angle_min + 360.0 * (float(i) / float(range_size));
-            if(90.0 >= angle || angle >= 270.0) // ROI angle
+            if ((((90.0 >= angle && 60.0 <= angle) || (angle >= 270.0 && angle <= 300.0)) && laser_ranges[i] < 1.2) || (60.0 > angle || angle > 300.0)) // ROI angle
             {
                 x = (-1) * std::get<0>(coordinate);
                 y = (1) * std::get<1>(coordinate);
@@ -54,19 +54,19 @@ void Scan2PCL::Callback(const sensor_msgs::LaserScan laser_msg)
     cloud2 = toCloud2(cloud);
     pub.publish(cloud2);
 
-    // ROI with no angle
-    for(size_t i=0; i<range_size; i++)
-    {
-        if(laser_ranges[i] > min_range && laser_ranges[i] < 2.5) // ROI range
-        { 
-            angle = laser_msg.angle_min + 360.0 * (float(i) / float(range_size));
-            x = (1) * std::get<0>(coordinate);
-            y = (-1) * std::get<1>(coordinate);
-            coordinate = coordinate_calc(laser_ranges[i], angle); 
-            cloud_all.push_back(pcl::PointXYZ(x, y, 0));
+    // // ROI with no angle
+    // for(size_t i=0; i<range_size; i++)
+    // {
+    //     if(laser_ranges[i] > min_range && laser_ranges[i] < 2.5) // ROI range
+    //     { 
+    //         angle = laser_msg.angle_min + 360.0 * (float(i) / float(range_size));
+    //         x = (1) * std::get<0>(coordinate);
+    //         y = (-1) * std::get<1>(coordinate);
+    //         coordinate = coordinate_calc(laser_ranges[i], angle); 
+    //         cloud_all.push_back(pcl::PointXYZ(x, y, 0));
             
-        }
-    }  
+    //     }
+    // }  
 
     // publish ROI with no angle
     // cloud2_all = toCloud2(cloud_all);
