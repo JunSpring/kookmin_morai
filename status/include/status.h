@@ -17,7 +17,7 @@ enum Statusnum
     RA, // RoundAbout
     MO, // Moving Obstacle
     WD, // Wait for Detection
-    OD, // Obstacle Detected
+    OD  // Obstacle Detected
 };
 
 enum Trafficnum
