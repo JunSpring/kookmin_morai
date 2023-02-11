@@ -240,7 +240,7 @@ int Status::judge_round_about()
 
     if(!round_about_state)
     {
-        if(y > 2.15)
+        if(y > 2.5)
         {
             return RA;
         }
@@ -252,13 +252,19 @@ int Status::judge_round_about()
             }
             else
             {
-                if(LiDARS[LiDAR_index].position_x > 0)
+                for(int i = 0; i < LiDAR_NUM; i++)
                 {
-                    round_about_state = true;
-                    return RA;
+                    if(LiDARS[i].lidar_update)
+                    {
+                        if(LiDARS[i].position_x < 0)
+                        {
+                            return RAR;
+                        }
+                    }
                 }
-                else
-                    return RAR;
+
+                round_about_state = true;
+                return RA;
             }
         }
     }
