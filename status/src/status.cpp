@@ -170,13 +170,9 @@ int Status::judge_mission_2and5()
             object_count++;
             object = LiDARS[LiDAR_index].position_x;
         }
-        
-        if(LiDAR_index != -1)
-            ROS_INFO("%f", object - LiDARS[LiDAR_index].position_x);
     }
     else if(start_time != 0)
     {
-        ROS_INFO("%d", object_count);
         if(object_count >= 3)
             mission = MO;
         else
@@ -204,7 +200,6 @@ int Status::judge_lane_num()
     
     if(0 < real_data_y && real_data_y < 2.0 && ros::Time::now().toSec() - start_time > 1.0)
     {
-        ROS_INFO("%f", real_data_y);
         if(status_msg.lane_num == 2)
         {
             if(mission_2and5 == 2)
@@ -274,7 +269,7 @@ int Status::judge_round_about()
             return RA;
         else
         {
-            if(pow(LiDARS[LiDAR_index].position_x, 2) + pow(LiDARS[LiDAR_index].position_y, 2) < 1.0)
+            if(pow(LiDARS[LiDAR_index].position_x, 2) + pow(LiDARS[LiDAR_index].position_y, 2) < 0.5)
             {
                 return RAR;
             }
@@ -314,37 +309,15 @@ void Status::process()
         status_msg.lane_num = 2;
         rubber_cone_state = false;
         round_about_state = false;
-        ROS_INFO("status : no mission driving\t\t\tnumber : 0");
-        break;
-    case RC:
-        ROS_INFO("status : rubber cone mission driving\t\tnumber : 1");
         break;
     case SO:
         status_msg.lane_num = judge_lane_num();
-        ROS_INFO("status : static obstacle mission driving\tnumber : 2\tlane number : %d", status_msg.lane_num);
         break;
     case TL:
         status_msg.mission3_go = judge_traffic_light();
-        if(status_msg.mission3_go)
-            ROS_INFO("status : traffic light mission driving\t\tnumber : 3\ttraffic light : Green");
-        else
-            ROS_INFO("status : traffic light mission driving\t\tnumber : 3\ttraffic light : Else");
-        break;
-    case RA:
-        ROS_INFO("status : roundabout mission driving\t\tnumber : 4");
         break;
     case MO:
         status_msg.mission5_go = judge_moving_obstacle();
-        if(status_msg.mission5_go)
-            ROS_INFO("status : moving obstacle mission driving\tnumber : 5\tdriving mode : Go");
-        else
-            ROS_INFO("status : moving obstacle mission driving\tnumber : 5\tdriving mode : Stop");
-        break;
-    case WD:
-        ROS_INFO("status : Wait for Detection\t\t\tnumber : 6");
-        break;
-    default:
-        ROS_INFO("%d", status_msg.status);
         break;
     }
 }

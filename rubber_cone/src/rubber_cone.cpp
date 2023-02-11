@@ -60,7 +60,7 @@ void RubberCone::Callback(const lidar_detection::lidarALL& lidar_msg)
         center_x = (min_dist1_x + min_dist2_x)/2;
         center_y = (min_dist1_y + min_dist2_y)/2;
 
-        ROS_INFO("Left & Right Detected");
+        // ROS_INFO("Left & Right Detected");
     }
 
     else if (dist_left.size() < 1 && dist_right.size() >= 1)
@@ -72,7 +72,7 @@ void RubberCone::Callback(const lidar_detection::lidarALL& lidar_msg)
         center_x = min_dist1_x - 0.6;
         center_y = min_dist1_y;
 
-        ROS_INFO("Only Right Detected");
+        // ROS_INFO("Only Right Detected");
     }
 
     else if (dist_right.size() < 1 && dist_left.size() >= 1)
@@ -84,7 +84,7 @@ void RubberCone::Callback(const lidar_detection::lidarALL& lidar_msg)
         center_x = min_dist1_x + 0.6;
         center_y = min_dist1_y;
 
-        ROS_INFO("Only Left Detected");
+        // ROS_INFO("Only Left Detected");
     }
 
     center_angle = std::atan2(center_x, center_y) * 180 / M_PI;

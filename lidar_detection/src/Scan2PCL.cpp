@@ -26,13 +26,13 @@ void Scan2PCL::Callback(const sensor_msgs::LaserScan laser_msg)
     if (status == SO || status == MO || status == WD)
     {
         max_range = 1.6;
-        ROS_INFO("max range 2.0");
+        // ROS_INFO("max range 1.6");
     }
 
     else 
     {
         max_range = 1.4;
-        ROS_INFO("max range 1.4");
+        // ROS_INFO("max range 1.4");
     }
 
     // ROI

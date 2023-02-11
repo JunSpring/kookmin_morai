@@ -202,10 +202,10 @@ void local_path::path_tracking()
         }
         path_pub.publish(tracking_path);
     }
-    else
-    {
-        ROS_INFO("DONE");
-    }
+    // else
+    // {
+    //     ROS_INFO("DONE");
+    // }
 }
 
 double local_path::pure_pursuit()
@@ -302,13 +302,13 @@ double local_path::pure_pursuit()
             double eta = atan2((2*VL*sin(theta)),lfd);
             steering = -eta;
         }
-        else
-        {
-            ROS_INFO("no found forwad point");
-        }
+        // else
+        // {
+        //     ROS_INFO("no found forwad point");
+        // }
     }
 
-    ROS_INFO("%f", steering * 180 / 3.14);
+    // ROS_INFO("%f", steering * 180 / 3.14);
     return steering * 180 / 3.14;
 }
 
