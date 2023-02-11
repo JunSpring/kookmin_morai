@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<launch>
+    <include file="$(find control)/launch/control.launch">
+    </include>
+
+    <include file="$(find global_path)/launch/path_publisher.launch">
+    </include>
+
+    <node name="Lidar_Detection" pkg="lidar_detection" type="lidar_detection" respawn="true" output="screen" />
+
+    <node name="Rubber_Cone" pkg="rubber_cone" type="rubber_cone" respawn="true" output="screen" />
+
+    <include file="$(find status)/launch/status.launch">
+    </include>
+
+</launch>
