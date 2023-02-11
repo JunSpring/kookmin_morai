@@ -399,6 +399,12 @@ void local_path::mission()
         center_angle = nomalize_angle(center_angle);
         go_slow(1.0, center_angle);
         break;
+    case RR:
+        go_slow(1.0, steering_angle);
+        break;
+    case RD:
+        go(8.1, steering_angle);
+        break;
     case SO:
         go_slow(4.0, steering_angle);
         break;
@@ -424,9 +430,6 @@ void local_path::mission()
         go_slow(4.0, steering_angle);
         break;
     case OD:
-        go_slow(1.0, steering_angle);
-        break;
-    case RR:
         go_slow(1.0, steering_angle);
         break;
     default:

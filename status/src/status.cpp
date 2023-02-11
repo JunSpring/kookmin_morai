@@ -139,11 +139,8 @@ int Status::judge_rubber_cone()
     }
     else
     {
-        if(LiDAR_number <= 3)
-        {
-            rubber_cone_state = false;
-            return RR;
-        }
+        if(LiDAR_number < 3)
+            return RD;
         return RC;
     }
 }

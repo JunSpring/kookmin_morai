@@ -41,6 +41,7 @@ enum Statusnum
     WD, // Wait for Detection
     OD, // Obstacle Detected
     RR, // Rubbercone Ready
+    RD, // Rubbercone Done
     RAR // RoundAbout Ready
 };
 
