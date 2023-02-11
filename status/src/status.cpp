@@ -160,6 +160,8 @@ int Status::judge_mission_2and5()
         start_time = ros::Time::now().toSec();
         object = LiDARS[LiDAR_index].position_x;
         object_count = 0;
+
+        sign = LiDARS[LiDAR_index].position_x > 0;
     }
     else if(ros::Time::now().toSec() - start_time < 1)
     {
@@ -288,7 +290,7 @@ bool Status::judge_moving_obstacle()
         real_data_y = LiDARS[LiDAR_index].position_y;
     }
     
-    if(real_data_x < 0.4)
+    if(-0.7 < real_data_x && real_data_x < 0.4 && real_data_y < 1.5)
         return false;
     return true;
 }

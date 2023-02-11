@@ -63,6 +63,7 @@ public:
 
     bool   rubber_cone_state;
     bool   round_about_state;
+    bool   sign;
 
     LiDAR LiDARS[6];
 

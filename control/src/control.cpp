@@ -406,7 +406,7 @@ void local_path::mission()
         go(8.1, steering_angle);
         break;
     case SO:
-        go_slow(4.0, steering_angle);
+        go_slow(3.0, steering_angle * 2);
         break;
     case TL:
         if(mission3_go)
