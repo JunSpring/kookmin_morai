@@ -9,6 +9,9 @@ Status::Status()
     start_time = 0;
     mission = WD;
 
+    rubber_cone_state = false;
+    round_about_state = false;
+
     // Publish
     status_pub = nh.advertise<status::status_msg>("/status", 10);
 
@@ -78,13 +81,29 @@ int Status::judge_LiDAR_detected(double roi)
     return least_index;
 }
 
+int Status::judge_LiDAR_number(double roi)
+{
+    int number = 0;
+    int LiDAR_index;
+
+    for(LiDAR_index = 0; LiDAR_index < LiDAR_NUM; LiDAR_index++)
+    {
+        if(-1*roi < LiDARS[LiDAR_index].position_x && LiDARS[LiDAR_index].position_x < roi && LiDARS[LiDAR_index].lidar_update)
+        {
+            number++;
+        }
+    }
+
+    return number;
+}
+
 int Status::judge_mission()
 {
     if(x < -12.5)
     {
-        return RC;
+        return judge_rubber_cone();
     }
-    else if(-12 < x && x < -5 && y < -4.0)
+    else if(-12.4 < x && x < -5 && y < -4.0)
     {
         mission_2and5 = 2;
         return judge_mission_2and5();
@@ -93,9 +112,9 @@ int Status::judge_mission()
     {
         return TL;
     }
-    else if(11 < x && x < 14.7 && -2.15 < y && y < 2.15)
+    else if(11 < x && x < 14.7 && -2.15 < y && y < 2.75)
     {
-        return RA;
+        return judge_round_about();
     }
     else if(1.8 < x && x < 6.75 && 4.15 < y && y < 5.85)
     {
@@ -103,6 +122,30 @@ int Status::judge_mission()
         return judge_mission_2and5();
     }
     return NM;
+}
+
+int Status::judge_rubber_cone()
+{
+    int LiDAR_number = judge_LiDAR_number(0.8);
+
+    if(!rubber_cone_state)
+    {
+        if(LiDAR_number >= 3)
+        {
+            rubber_cone_state = true;
+            return RC;
+        }
+        return RR;
+    }
+    else
+    {
+        if(LiDAR_number <= 3)
+        {
+            rubber_cone_state = false;
+            return RR;
+        }
+        return RC;
+    }
 }
 
 int Status::judge_mission_2and5()
@@ -113,7 +156,9 @@ int Status::judge_mission_2and5()
     
     int LiDAR_index = judge_LiDAR_detected(0.8);
 
-    if(LiDAR_index != -1 && start_time == 0)
+    if(LiDAR_index == -1 && start_time == 0)
+        return WD;
+    else if(LiDAR_index != -1 && start_time == 0)
     {
         start_time = ros::Time::now().toSec();
         object = LiDARS[LiDAR_index].position_x;
@@ -121,12 +166,19 @@ int Status::judge_mission_2and5()
     }
     else if(ros::Time::now().toSec() - start_time < 1)
     {
-        if(LiDAR_index != -1 && abs(object - LiDARS[LiDAR_index].position_x) > 0.1)
+        if(LiDAR_index != -1 && abs(object - LiDARS[LiDAR_index].position_x) > 0.02)
+        {
             object_count++;
+            object = LiDARS[LiDAR_index].position_x;
+        }
+        
+        if(LiDAR_index != -1)
+            ROS_INFO("%f", object - LiDARS[LiDAR_index].position_x);
     }
     else if(start_time != 0)
     {
-        if(object_count >= 5)
+        ROS_INFO("%d", object_count);
+        if(object_count >= 3)
             mission = MO;
         else
             mission = SO;
@@ -134,12 +186,12 @@ int Status::judge_mission_2and5()
         return mission;
     }
 
-    return WD;
+    return OD;
 }
 
 int Status::judge_lane_num()
 {
-    int LiDAR_index = judge_LiDAR_detected(0.2);
+    int LiDAR_index = judge_LiDAR_detected(0.1);
     static double real_data_x = -1;
     static double real_data_y = -1;
 
@@ -183,6 +235,50 @@ bool Status::judge_traffic_light()
     return true;
 }
 
+int Status::judge_round_about()
+{
+    int LiDAR_index = judge_LiDAR_detected(1.4);
+
+    if(!round_about_state)
+    {
+        if(y > 2.15)
+        {
+            return RA;
+        }
+        else
+        {
+            if(LiDAR_index == -1)
+            {
+                return RAR;
+            }
+            else
+            {
+                if(LiDARS[LiDAR_index].position_x > 0)
+                {
+                    round_about_state = true;
+                    return RA;
+                }
+                else
+                    return RAR;
+            }
+        }
+    }
+    else
+    {
+        if(LiDAR_index == -1)
+            return RA;
+        else
+        {
+            if(pow(LiDARS[LiDAR_index].position_x, 2) + pow(LiDARS[LiDAR_index].position_y, 2) < 1.0)
+            {
+                return RAR;
+            }
+            else
+                return RA;
+        }
+    }
+}
+
 bool Status::judge_moving_obstacle()
 {
     int LiDAR_index = judge_LiDAR_detected(0.8);
@@ -195,7 +291,7 @@ bool Status::judge_moving_obstacle()
         real_data_y = LiDARS[LiDAR_index].position_y;
     }
     
-    if(real_data_x < 0.4 && real_data_y < 1.0)
+    if(real_data_x < 0.4)
         return false;
     return true;
 }
@@ -211,6 +307,8 @@ void Status::process()
         start_time = 0;
         mission = WD;
         status_msg.lane_num = 2;
+        rubber_cone_state = false;
+        round_about_state = false;
         ROS_INFO("status : no mission driving\t\t\tnumber : 0");
         break;
     case RC:
@@ -239,6 +337,9 @@ void Status::process()
         break;
     case WD:
         ROS_INFO("status : Wait for Detection\t\t\tnumber : 6");
+        break;
+    default:
+        ROS_INFO("%d", status_msg.status);
         break;
     }
 }

@@ -39,7 +39,9 @@ enum Statusnum
     RA, // RoundAbout
     MO, // Moving Obstacle
     WD, // Wait for Detection
-    OD  // Obstacle Detected
+    OD, // Obstacle Detected
+    RR, // Rubbercone Ready
+    RAR // RoundAbout Ready
 };
 
 class local_path

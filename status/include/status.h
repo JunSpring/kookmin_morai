@@ -17,7 +17,9 @@ enum Statusnum
     RA, // RoundAbout
     MO, // Moving Obstacle
     WD, // Wait for Detection
-    OD  // Obstacle Detected
+    OD, // Obstacle Detected
+    RR, // Rubbercone Ready
+    RAR // RoundAbout Ready
 };
 
 enum Trafficnum
@@ -58,6 +60,9 @@ public:
     int    object_count;
     double object;
 
+    bool   rubber_cone_state;
+    bool   round_about_state;
+
     LiDAR LiDARS[6];
 
     // Publish
@@ -75,9 +80,12 @@ public:
 
     // Function
     int     judge_LiDAR_detected(double roi);
+    int     judge_LiDAR_number(double roi);
     int     judge_mission();
+    int     judge_rubber_cone();
     int     judge_mission_2and5();
     int     judge_lane_num();
+    int     judge_round_about();
     bool    judge_traffic_light();
     bool    judge_moving_obstacle();
     void    process();
